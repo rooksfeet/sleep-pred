@@ -1,0 +1,15 @@
+import streamlit as st, joblib, pandas as pd
+m = joblib.load("sleep_model.pkl")
+st.title("Sleep Quality Predictor")
+s = st.slider("Study hours", 0.0, 12.0, 6.0)
+sc = st.slider("Screen time (h)", 1.0, 4.0, 2.5)
+c = st.slider("Caffeine (cups)", 0, 5, 2)
+p = st.slider("Physical activity (min)", 0, 120, 60)
+if st.button("Predict"):
+    X = pd.DataFrame([[s, sc, c, p]], columns=["Study_Hours","Screen_Time","Caffeine_Intake","Physical_Activity"])
+    q = min(10, max(1, m.predict(X)[0]))
+    st.metric("Predicted sleep quality (1–10)", round(q, 1))
+    if sc > 3: st.write("Cut screen time: about −1 point per hour.")
+    if c > 3: st.write("Less caffeine, especially late in the day.")
+    if p < 30: st.write("Add 30 min of activity: about +0.6 points.")
+    if s > 9: st.write("Long study hours lower sleep quality.")
