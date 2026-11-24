@@ -1,15 +1,33 @@
-import streamlit as st, joblib, pandas as pd
-m = joblib.load("sleep_model.pkl")
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+import streamlit as st
+
+# read the data
+df = pd.read_csv("student_sleep.csv")
+
+# inputs and output
+X = df[["Study_Hours", "Screen_Time", "Caffeine_Intake", "Physical_Activity"]]
+y = df["Sleep_Quality"]
+
+# train the model
+model = LinearRegression()
+model.fit(X, y)
+
 st.title("Sleep Quality Predictor")
-s = st.slider("Study hours", 0.0, 12.0, 6.0)
-sc = st.slider("Screen time (h)", 1.0, 4.0, 2.5)
-c = st.slider("Caffeine (cups)", 0, 5, 2)
-p = st.slider("Physical activity (min)", 0, 120, 60)
+
+study = st.number_input("Study hours", 0.0, 12.0, 6.0)
+screen = st.number_input("Screen time (hours)", 1.0, 4.0, 2.5)
+caffeine = st.number_input("Caffeine (cups)", 0, 5, 2)
+activity = st.number_input("Physical activity (minutes)", 0, 120, 60)
+
 if st.button("Predict"):
-    X = pd.DataFrame([[s, sc, c, p]], columns=["Study_Hours","Screen_Time","Caffeine_Intake","Physical_Activity"])
-    q = min(10, max(1, m.predict(X)[0]))
-    st.metric("Predicted sleep quality (1–10)", round(q, 1))
-    if sc > 3: st.write("Cut screen time: about −1 point per hour.")
-    if c > 3: st.write("Less caffeine, especially late in the day.")
-    if p < 30: st.write("Add 30 min of activity: about +0.6 points.")
-    if s > 9: st.write("Long study hours lower sleep quality.")
+    new = pd.DataFrame([[study, screen, caffeine, activity]], columns=X.columns)
+    result = model.predict(new)[0]
+
+    # keep result between 1 and 10
+    if result > 10:
+        result = 10
+    if result < 1:
+        result = 1
+
+    st.write("Predicted sleep quality:", round(result, 1), "/ 10")
