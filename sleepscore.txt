@@ -1,3 +1,192 @@
+sklearn
+matplotlib
+pandas
+numpy
+aa pd
+as np
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import numpy as np
+import pandas as pd
+
+# 1. NUMPY
+a = np.array([90, 100, 110, 120])          # 1-D array
+m = np.array([[1, 2, 3], [4, 5, 6]])       # 2-D array
+print("a =", a)
+print("m =\n", m)
+
+# Attributes
+print("ndim:", a.ndim, m.ndim)             # rank: 1, 2
+print("shape:", a.shape, m.shape)          # (4,) (2, 3)
+print("size:", a.size, m.size)             # 4, 6
+print("dtype:", a.dtype)                   # int64
+
+# Other ways to create arrays
+print("zeros:", np.zeros(3))
+print("ones:\n", np.ones((2, 2)))
+print("arange:", np.arange(0, 10, 2))      # stop excluded
+print("linspace:", np.linspace(0, 1, 5))
+
+# Indexing and slicing
+print("a[0], a[-1]:", a[0], a[-1])
+print("a[1:3]:", a[1:3])
+print("m[1, 2]:", m[1, 2])
+print("row 0:", m[0], " column 1:", m[:, 1])
+
+# Operations (element-wise)
+print("a + 5:", a + 5)
+print("a * 2:", a * 2)
+print("a + a:", a + a)
+print("sum, mean, max, min:", a.sum(), a.mean(), a.max(), a.min())
+print("sqrt(16):", np.sqrt(16))
+
+# Reshape
+print("reshape(2, 3):\n", np.array([1, 2, 3, 4, 5, 6]).reshape(2, 3))
+print("reshape(-1, 1) shape:", np.array([1, 2, 3]).reshape(-1, 1).shape)
+
+
+# 2. SERIES
+s1 = pd.Series([10, 20, 30])                                    # default index
+s2 = pd.Series([90, 91, 97], index=['Maths', 'Science', 'Hindi'])
+s3 = pd.Series(5, index=['a', 'b', 'c'])                        # scalar
+s4 = pd.Series({'Jan': 31, 'Feb': 28})                          # from dict
+s5 = pd.Series(np.array([1.5, 2.5]))                            # from ndarray
+print(s1, s2, s3, s4, s5, sep="\n\n")
+print("s2['Maths']:", s2['Maths'])        # by label
+print("s2.iloc[0]:", s2.iloc[0])          # by position
+print("s2 > 90:\n", s2[s2 > 90])
+
+
+# 3. CREATING DATAFRAMES
+# (a) From NumPy arrays
+array1 = np.array([90, 100, 110, 120])
+array2 = np.array([50, 60, 70])
+array3 = np.array([10, 20, 30, 40])
+marksDF = pd.DataFrame([array1, array2, array3], columns=['A', 'B', 'C', 'D'])
+print("(a)\n", marksDF)
+
+# (b) From dictionary of lists
+data = {'Name': ['Varun', 'Ganesh', 'Joseph', 'Abdul', 'Reena'],
+        'Age': [37, 30, 38, 39, 40]}
+print("(b)\n", pd.DataFrame(data))
+
+# (c) From list of dictionaries
+listDict = [{'a': 10, 'b': 20}, {'a': 5, 'b': 10, 'c': 20}]
+print("(c)\n", pd.DataFrame(listDict))
+
+# (d) From dictionary of Series
+idx = ['Maths', 'Science', 'Hindi']
+ResultSheet = {'Rajat':     pd.Series([90, 91, 97], index=idx),
+               'Amrita':    pd.Series([92, 81, 96], index=idx),
+               'Meenakshi': pd.Series([89, 91, 88], index=idx),
+               'Rose':      pd.Series([81, 71, 67], index=idx),
+               'Karthika':  pd.Series([94, 95, 99], index=idx)}
+Result = pd.DataFrame(ResultSheet)
+print("(d)\n", Result)
+
+
+# 4. ADD / MODIFY / DELETE
+Result['Fathima'] = [89, 78, 76]                    # add column
+Result.loc['English'] = [90, 92, 89, 80, 90, 88]    # add row
+Result.loc['Science'] = [92, 84, 90, 72, 96, 88]    # modify row
+print("After adding / modifying:\n", Result)
+Result = Result.drop('Hindi', axis=0)                              # delete row
+Result = Result.drop(['Rajat', 'Meenakshi', 'Karthika'], axis=1)   # delete columns
+print("After deleting:\n", Result)
+
+
+# 5. ATTRIBUTES
+df = pd.DataFrame({'Student': ['Arnav', 'Neha', 'Priya', 'Rahul'],
+                   'Marks': [85, 92, 78, 83],
+                   'Sports': ['Cricket', 'Volleyball', 'Hockey', 'Badminton']},
+                  index=['Data 1', 'Data 2', 'Data 3', 'Data 4'])
+print(df)
+print("index:", df.index)
+print("columns:", df.columns)
+print("shape:", df.shape)
+print("size:", df.size)
+print("len:", len(df))
+print("dtypes:\n", df.dtypes)
+print("values:\n", df.values)
+print("T:\n", df.T)
+print("empty:", df.empty, pd.DataFrame().empty)
+print("head(2):\n", df.head(2))
+print("tail(2):\n", df.tail(2))
+
+
+# 6. SELECTING + STATISTICS
+print(df['Marks'])                       # one column
+print(df[['Student', 'Marks']])          # several columns
+print("loc:", df.loc['Data 2', 'Marks'])  # by labels
+print("iloc:", df.iloc[0, 1])            # by positions
+print(df[df['Marks'] > 80])              # condition
+print("mean, max, min, count:", df['Marks'].mean(), df['Marks'].max(),
+      df['Marks'].min(), df['Marks'].count())
+print(df.describe())
+
+
+# 7. CSV EXPORT / IMPORT
+df.to_csv('resultout.csv', index=False)      # export, no row labels
+new = pd.read_csv('resultout.csv', sep=',', header=0)   # import
+print(new)
+
+
+# 8. MISSING VALUES
+marks = pd.DataFrame({
+    'Maths':   [90, 91, 97, 89, 65, 93],
+    'Science': [92, 81, np.nan, 87, 50, 88],
+    'English': [89, 91, 88, 78, 77, 82],
+    'Hindi':   [81, 71, 67, 82, np.nan, 89],
+    'AI':      [94, 95, 99, np.nan, 96, 99]},
+    index=['Heena', 'Shefali', 'Meera', 'Joseph', 'Suhana', 'Bismeet'])
+print(marks)
+
+# Detect
+print(marks.isnull())
+print("Science has NaN:", marks['Science'].isnull().any())
+print("Maths has NaN:", marks['Maths'].isnull().any())
+print("Missing per column:\n", marks.isnull().sum())
+print("Total missing:", marks.isnull().sum().sum())
+
+# Handle
+print("dropna():\n", marks.dropna())
+print("dropna(axis=1):\n", marks.dropna(axis=1))
+print("fillna(0):\n", marks.fillna(0))
+print("fillna(mean):\n", marks.fillna(marks.mean()).round(1))
+print("ffill():\n", marks.ffill())
+print("bfill():\n", marks.bfill())
+
+marks = marks.fillna(marks.mean()).round(1)   # save the result
+print("Missing after fill:", marks.isnull().sum().sum())
+marks.to_csv('marks_clean.csv')
+print("Saved marks_clean.csv")
+
+
+
+------
+
+
 import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_squared_error
